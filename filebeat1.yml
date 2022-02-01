@@ -1,0 +1,47 @@
+filebeat.inputs:
+# - type: stdin
+- type: kafka
+  hosts:
+    - b-1.jewelkafkm:9092
+  topics: ["jewel-audit"]
+  group_id: "amazon.msk2"
+  fields:
+    log_topics: "kafka"
+- type: tcp
+  max_message_size: 10MiB
+  host: "localhost:9000"
+- type: container
+  paths:
+    - /var/log/containers/*.log
+  fields:
+    log_topics: "jb-java"
+- type: container
+  paths:
+    - /var/log/containers/*.log
+logging.metrics.enabled: false
+# output.console:
+#     pretty: true
+
+output.elasticsearch:
+  hosts: "https://vp3"
+  username: "admin"
+  password: "Passw0rd@123"
+  protocol: "https"
+  ssl.verification_mode: none
+  indices:
+    - index: "testing-%{[input.type]}-%{+YYYY.MM}"
+    # - index: "jewel-log-java-dev-%{[input.type]}-%{+YYYY.MM}"
+    #   when.contains:
+    #     fields:
+    #       log_topics: "jb-java"
+    # - index: "jewel-log-dev-%{[input.type]}-%{[kafka.topic]}-%{+YYYY.MM}"
+    #   when.contains:
+    #     fields:
+    #       log_topics: "kafka"
+
+setup.ilm.enabled: false
+setup.pack.security.enabled: false
+setup.xpack.graph.enabled: false
+setup.xpack.watcher.enabled: false
+setup.xpack.monitoring.enabled: false
+setup.xpack.reporting.enabled: false
